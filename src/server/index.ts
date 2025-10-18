@@ -52,15 +52,15 @@ app.use("/api/cyp2c9",cyp2c9Routes);
 
 
 
-// --- auth ---
+// --- auth ----
 app.use("/api/auth", authRoutes);
 
-// --- 404 fallback for unknown API ---
+// --- 404 fallback for unknown API ---- 
 app.use("/api", (_req, res) => {
   res.status(404).json({ error: "Not Found" });
 });
 
-// --- error handler ---
+// --- error handler --- เห้ยจะได้ได้ยัง
 app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
   console.error("[server error]", err);
   res.status(500).json({ error: err.message || String(err) });
