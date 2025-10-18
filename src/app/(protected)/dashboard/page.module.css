@@ -1,0 +1,208 @@
+.container {
+  padding: 4rem;
+  background: #eaf9e7;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+.title {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #013237;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: #4ca771;
+  margin-bottom: 1.5rem;
+}
+
+/* Layout grid */
+.grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr; /* Left big, right small */
+  gap: 2rem;
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.right {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Cards */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  background: #c0e6ba;
+  padding: 1rem;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.card h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: #013237;
+}
+
+.number {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #013237;
+  margin-top: 0.5rem;
+}
+
+/* Chart box */
+.chartBox {
+  background: #fff;
+  color: #000000;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+/* Activity timeline */
+.activity {
+  background: #fff;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-left: 6px solid #4ca771;
+}
+
+.activity h3 {
+  margin-bottom: 1rem;
+  color: #013237;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.activity ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.activity li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.activity li:last-child {
+  border-bottom: none;
+}
+
+.timelineDot {
+  width: 10px;
+  height: 10px;
+  background: #4ca771;
+  border-radius: 50%;
+  margin-top: 4px;
+}
+
+.time {
+  display: block;
+  font-size: 0.8rem;
+  color: #4ca771;
+  font-weight: bold;
+  margin-bottom: 0.3rem;
+}
+
+.detail {
+  font-size: 0.9rem;
+  color: #013237;
+}
+.activityList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.activityItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.activityItem:last-child {
+  border-bottom: none;
+}
+
+:global(html.dark) .container {
+  background: #0d1117;
+  color: #e6edf3;
+}
+
+:global(html.dark) .title {
+  color: #e6edf3;
+}
+
+:global(html.dark) .subtitle {
+  color: #8b949e;
+}
+
+:global(html.dark) .card {
+  background: #161b22;
+  color: #e6edf3;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+:global(html.dark) .number {
+  color: #ffffff;
+}
+
+:global(html.dark) .chartBox {
+  background: #161b22;
+  color: #e6edf3;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+:global(html.dark) .activity {
+  background: #161b22;
+  color: #e6edf3;
+  border-left: 4px solid #4ca771;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+:global(html.dark) .activity h3 {
+  color: #e6edf3;
+}
+
+:global(html.dark) .timelineDot {
+  background: #4ca771;
+}
+
+:global(html.dark) .time {
+  color: #58a6ff;
+}
+
+:global(html.dark) .detail {
+  color: #e6edf3;
+}
+
+:global(html.dark) .card h3 {
+  color: #ffffff;
+}
+
+:global(html.dark) .card .number {
+  color: #ffffff; 
+}

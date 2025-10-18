@@ -1,0 +1,90 @@
+.container {
+  padding: 4rem;
+  background: #eaf9e7;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.title {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #013237;
+  transition: color 0.3s ease;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: #4ca771;
+  margin-bottom: 1.5rem;
+  transition: color 0.3s ease;
+}
+
+.section {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  transition: background 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.sectionTitle {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #013237;
+  margin-bottom: 1rem;
+  transition: color 0.3s ease;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #4ca771;
+  color: white;
+  padding: 0.7rem 1.2rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: bold;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.button:hover {
+  background: #3a8e60;
+  transform: translateY(-1px);
+}
+
+:global(html.dark) .container {
+  background: #0d1117;
+  color: #e6edf3;
+}
+
+:global(html.dark) .title {
+  color: #e6edf3;
+}
+
+:global(html.dark) .subtitle {
+  color: #8b949e;
+}
+
+:global(html.dark) .section {
+  background: #161b22;
+  color: #e6edf3;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+:global(html.dark) .sectionTitle {
+  color: #e6edf3;
+}
+
+:global(html.dark) .button {
+  background: #2f8a5a;
+  color: #fff;
+}
+
+:global(html.dark) .button:hover {
+  background: #256349;
+}

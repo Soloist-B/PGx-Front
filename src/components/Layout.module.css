@@ -1,0 +1,25 @@
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.content {
+  flex: 1;
+  padding: 0rem;
+  background: #d8f3d3;
+  transition: margin-left 0.25s ease;
+}
+
+/* align content ตาม sidebar */
+.contentOpen {
+  margin-left: 220px; /* match sidebar เปิด */
+}
+
+.contentClosed {
+  margin-left: 49px; /* match sidebar ปิด */
+}
+
+:global(html.dark) .content {
+  background: #0f1f1d; /* เขียว-ดำเข้ม */
+  color: #e0e0e0;     /* สีตัวอักษรให้อ่านง่าย */
+}

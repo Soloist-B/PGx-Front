@@ -1,0 +1,125 @@
+.main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #EAF9E7;
+  font-family: Arial, sans-serif;
+}
+
+.loginBox {
+  background: white;
+  padding: 50px 40px;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  text-align: center;
+  width: 360px;
+}
+
+.title {
+  font-size: 1.9rem;
+  font-weight: bold;
+  color: #013237;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  font-size: 0.95rem;
+  margin-bottom: 28px;
+  color: #4CA771;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* Floating input */
+.inputGroup {
+  position: relative;
+  text-align: left;
+}
+
+.input {
+  width: 100%;
+  padding: 18px 12px 8px 12px;
+  border: 1px solid #C0E6BA;
+  border-radius: 6px;
+  font-size: 1rem;
+  background-color: #fff;
+  color: #013237;
+}
+
+.input:focus {
+  border-color: #4CA771;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(76, 167, 113, 0.25);
+}
+
+/* Floating label */
+.label {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  font-size: 1rem;
+  color: #6b7280;
+  pointer-events: none;
+  transition: 0.2s ease all;
+  background: #fff;
+  padding: 0 4px;
+}
+
+.input:focus + .label,
+.input:not(:placeholder-shown) + .label {
+  top: 0;
+  transform: translateY(-50%) scale(0.9);
+  font-size: 0.8rem;
+  color: #4CA771;
+}
+
+/* Show/Hide button */
+.toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #4CA771;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.toggle:hover {
+  text-decoration: underline;
+}
+
+/* Error message */
+.error {
+  font-size: 0.8rem;
+  color: red;
+  margin-top: 4px;
+}
+
+/* Button */
+.loginButton {
+  background-color: #4CA771;
+  color: white;
+  border: none;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.1s ease;
+}
+
+.loginButton:hover {
+  background-color: #013237;
+}
+
+.loginButton:active {
+  transform: scale(0.98);
+}
