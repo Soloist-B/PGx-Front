@@ -12,6 +12,8 @@ import {
   LogOut,
   Menu,
   X,
+  Dna,
+  ShieldUser, // ✅ เพิ่มไอคอนเลือกยีน
 } from "lucide-react";
 import styles from "./Sidebar.module.css";
 
@@ -36,10 +38,13 @@ const Sidebar = ({
     router.push("/login");
   };
 
+  // ✅ อัปเดตเมนู
   const menu = [
     { name: "Dashboard", path: "/dashboard", icon: <LayoutDashboard size={22} /> },
+    { name: "Admin", path: "/admin", icon: <ShieldUser size={22} /> },
     { name: "Patients", path: "/patient", icon: <Users size={22} /> },
-    { name: "Consent", path: "/consent", icon: <ClipboardCheck size={22} /> },
+    { name: "Gene Selection", path: "/gene", icon: <Dna size={22} /> }, // ✅ หน้าใหม่
+    { name: "Approve", path: "/approve", icon: <ClipboardCheck size={22} /> }, // ✅ เปลี่ยนชื่อ
     { name: "Reports", path: "/reports", icon: <FileText size={22} /> },
     { name: "Settings", path: "/settings", icon: <Settings size={22} /> },
   ];

@@ -3,15 +3,10 @@
 
 import { usePatients } from "@/context/PatientContext";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Search } from "lucide-react";
+import { Search, User, Save } from "lucide-react";
 import styles from "./page.module.css";
-import { genotypeMappings } from "@/utils/mappings";
-
-type MarkerValues = Record<string, string>;
 
 export default function PatientPage() {
-  const router = useRouter();
   const { patients, addPatient } = usePatients();
 
   const [form, setForm] = useState({
@@ -23,10 +18,6 @@ export default function PatientPage() {
     phone: "",
     ethnicity: "",
     otherEthnicity: "",
-    gene: "",
-    markerValues: {} as MarkerValues,
-    genotype: "",
-    phenotype: "",
   });
 
   const [searchId, setSearchId] = useState("");
@@ -54,8 +45,7 @@ export default function PatientPage() {
         "otherEthnicity",
       ];
 
-      setForm((prev) => ({
-        ...prev,
+      setForm({
         idCard: existing.idCard,
         firstName: existing.firstName,
         lastName: existing.lastName,
@@ -64,18 +54,16 @@ export default function PatientPage() {
         phone: existing.phone,
         ethnicity: existing.ethnicity,
         otherEthnicity: existing.otherEthnicity || "",
-      }));
+      });
 
-      // ล้าง error ของฟิลด์ที่ถูกเติมแล้ว
       setErrors((prev) => {
         const cleared = { ...prev };
         fieldsToFill.concat("searchId").forEach((k) => delete cleared[k]);
         return cleared;
       });
 
-      // ไฮไลท์ฟิลด์ที่ autofill
       setHighlightedFields(fieldsToFill);
-      setTimeout(() => setHighlightedFields([]), 2000); // 2 วิแล้วหาย
+      setTimeout(() => setHighlightedFields([]), 2000);
     } else {
       setErrors((prev) => ({ ...prev, searchId: "No patient record found" }));
     }
@@ -94,18 +82,6 @@ export default function PatientPage() {
       return;
     }
 
-    if (name === "gene") {
-      setForm((prev) => ({
-        ...prev,
-        gene: value,
-        markerValues: {},
-        genotype: "",
-        phenotype: "",
-      }));
-      setErrors((prev) => ({ ...prev, gene: "" }));
-      return;
-    }
-
     setForm((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
@@ -113,47 +89,6 @@ export default function PatientPage() {
   const handleRadio = (name: string, value: string) => {
     setForm((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => ({ ...prev, [name]: "" }));
-  };
-
-  const selectedGene =
-    form.gene ? genotypeMappings[form.gene as keyof typeof genotypeMappings] : null;
-
-  const allMarkersSelected = (geneKey: string, values: MarkerValues) => {
-    const gm = genotypeMappings[geneKey as keyof typeof genotypeMappings];
-    if (!gm) return false;
-    return gm.markers.every((m) => values[m.name]);
-  };
-
-  const handleMarkerChange = (markerName: string, value: string) => {
-    const nextMarkerValues = { ...form.markerValues, [markerName]: value };
-    const nextErrors = { ...errors };
-    delete nextErrors[markerName];
-
-    if (form.gene && allMarkersSelected(form.gene, nextMarkerValues)) {
-      const gm = genotypeMappings[form.gene as keyof typeof genotypeMappings];
-      const computedGenotype = gm.mapToGenotype(nextMarkerValues) || "";
-      const phenotype =
-        gm.genotypes.find((g) => g.genotype === computedGenotype)?.phenotype || "";
-
-      setForm((prev) => ({
-        ...prev,
-        markerValues: nextMarkerValues,
-        genotype: computedGenotype,
-        phenotype,
-      }));
-
-      delete nextErrors.genotype;
-      delete nextErrors.phenotype;
-      setErrors(nextErrors);
-    } else {
-      setForm((prev) => ({
-        ...prev,
-        markerValues: nextMarkerValues,
-        genotype: "",
-        phenotype: "",
-      }));
-      setErrors(nextErrors);
-    }
   };
 
   // ===== Validate =====
@@ -179,35 +114,38 @@ export default function PatientPage() {
       newErrors.otherEthnicity = "Please specify ethnicity";
     }
 
-    if (!form.gene) newErrors.gene = "Please select gene";
-
-    const selected =
-      form.gene ? genotypeMappings[form.gene as keyof typeof genotypeMappings] : null;
-    if (selected) {
-      selected.markers.forEach((m) => {
-        if (!form.markerValues[m.name]) {
-          newErrors[m.name] = `Please select ${m.name}`;
-        }
-      });
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+  // ===== Submit =====
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
 
-    let phenotype = form.phenotype;
-    if (form.gene && form.genotype) {
-      const gm = genotypeMappings[form.gene as keyof typeof genotypeMappings];
-      phenotype =
-        gm.genotypes.find((g) => g.genotype === form.genotype)?.phenotype || "";
-    }
+    // ✅ บันทึกข้อมูลพร้อมสถานะ + ค่า default ของฟิลด์ที่ยังไม่ได้ใช้
+    addPatient({
+      ...form,
+      gene: "",
+      markerValues: {},
+      genotype: "",
+      phenotype: "",
+      status: "pending_gene",
+    });
 
-    addPatient({ ...form, phenotype });
-    router.push("/patient/summary");
+    // ✅ แจ้งเตือนและล้างฟอร์ม
+    alert("✅ บันทึกข้อมูลเรียบร้อยแล้ว");
+
+    setForm({
+      idCard: "",
+      firstName: "",
+      lastName: "",
+      sex: "",
+      dob: "",
+      phone: "",
+      ethnicity: "",
+      otherEthnicity: "",
+    });
   };
 
   // ===== UI =====
@@ -240,8 +178,11 @@ export default function PatientPage() {
 
       {/* Patient Info */}
       <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>Patient Information</h2>
-
+        <h2 className={styles.sectionTitle}>
+          <User size={18} color="#4CA771" style={{ marginRight: 6 }} />
+          Pending Patients
+        </h2>
+        
         {/* ID Card */}
         <div className={styles.field}>
           <label className={styles.label}>ID Card</label>
@@ -343,7 +284,12 @@ export default function PatientPage() {
             } ${highlightedFields.includes("phone") ? styles.autofilled : ""}`}
             name="phone"
             value={form.phone}
-            onChange={handleChange}
+            onChange={(e) => {
+              // ✅ กรองให้พิมพ์ได้เฉพาะตัวเลข
+              const onlyNums = e.target.value.replace(/\D/g, "").slice(0, 10);
+              setForm((prev) => ({ ...prev, phone: onlyNums }));
+              setErrors((prev) => ({ ...prev, phone: "" }));
+            }}
             placeholder="Phone (10 digits)"
             maxLength={10}
           />
@@ -397,55 +343,9 @@ export default function PatientPage() {
         </div>
       </div>
 
-      {/* Genetic Info */}
-      <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>Genetic Information</h2>
-
-        <div className={styles.field}>
-          <select
-            className={`${styles.input} ${errors.gene ? styles.errorInput : ""}`}
-            name="gene"
-            value={form.gene}
-            onChange={handleChange}
-          >
-            <option value="">-- Select Gene --</option>
-            {Object.keys(genotypeMappings).map((gene) => (
-              <option key={gene} value={gene}>
-                {gene}
-              </option>
-            ))}
-          </select>
-          {errors.gene && <span className={styles.error}>{errors.gene}</span>}
-        </div>
-
-        {selectedGene &&
-          selectedGene.markers.map((marker) => (
-            <div key={marker.name} className={styles.field}>
-              <label className={styles.label}>
-                {marker.name} {marker.description}
-              </label>
-              <select
-                className={`${styles.input} ${errors[marker.name] ? styles.errorInput : ""}`}
-                value={form.markerValues[marker.name] || ""}
-                onChange={(e) => handleMarkerChange(marker.name, e.target.value)}
-              >
-                <option value="">-- Select --</option>
-                {marker.options.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-              {errors[marker.name] && (
-                <span className={styles.error}>{errors[marker.name]}</span>
-              )}
-            </div>
-          ))}
-      </div>
-
       <div className={styles.actions}>
         <button className={styles.button} type="submit">
-          Submit
+          <Save size={18} style={{ marginRight: 6 }} /> Save
         </button>
       </div>
     </form>
