@@ -13,8 +13,11 @@ import {
   Search,
   AlertCircle,
 } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function AdminUserManagement() {
+  const { language } = useLanguage();
+
   const [users, setUsers] = useState([
     {
       id: 1,
@@ -49,7 +52,6 @@ export default function AdminUserManagement() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<any>(null);
-
   const [newUser, setNewUser] = useState({
     firstName: "",
     lastName: "",
@@ -58,12 +60,11 @@ export default function AdminUserManagement() {
     role: "",
     hospital: "",
   });
-
   const [error, setError] = useState("");
-
   const [searchQuery, setSearchQuery] = useState("");
   const [filterRole, setFilterRole] = useState("All");
 
+  // Filter
   const filteredUsers = users.filter((u) => {
     const matchRole = filterRole === "All" || u.role === filterRole;
     const matchName = u.firstName
@@ -72,20 +73,21 @@ export default function AdminUserManagement() {
     return matchRole && matchName;
   });
 
-  const validateUser = (user: any) => {
-    return (
-      user.firstName.trim() &&
-      user.lastName.trim() &&
-      user.email.trim() &&
-      user.password.trim() &&
-      user.role.trim() &&
-      user.hospital.trim()
-    );
-  };
+  const validateUser = (user: any) =>
+    user.firstName.trim() &&
+    user.lastName.trim() &&
+    user.email.trim() &&
+    user.password.trim() &&
+    user.role.trim() &&
+    user.hospital.trim();
 
   const handleAddUser = () => {
     if (!validateUser(newUser)) {
-      setError("⚠️ Please fill in all fields before saving.");
+      setError(
+        language === "en"
+          ? "⚠️ Please fill in all fields before saving."
+          : "⚠️ กรุณากรอกข้อมูลให้ครบทุกช่องก่อนบันทึก"
+      );
       return;
     }
     const newId = Date.now();
@@ -110,7 +112,11 @@ export default function AdminUserManagement() {
 
   const handleSaveEdit = () => {
     if (!validateUser(selectedUser)) {
-      setError("⚠️ Please fill in all fields before saving.");
+      setError(
+        language === "en"
+          ? "⚠️ Please fill in all fields before saving."
+          : "⚠️ กรุณากรอกข้อมูลให้ครบทุกช่องก่อนบันทึก"
+      );
       return;
     }
     setUsers((prev) =>
@@ -121,7 +127,13 @@ export default function AdminUserManagement() {
   };
 
   const handleDeleteUser = (id: number) => {
-    if (confirm("Delete this user?")) {
+    if (
+      confirm(
+        language === "en"
+          ? "Delete this user?"
+          : "คุณต้องการลบผู้ใช้นี้หรือไม่?"
+      )
+    ) {
       setUsers((prev) => prev.filter((u) => u.id !== id));
     }
   };
@@ -130,55 +142,77 @@ export default function AdminUserManagement() {
     setShowPassword((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
+  // =================== Render ===================
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>User Management</h1>
+      <h1 className={styles.title}>
+        {language === "en" ? "User Management" : "จัดการผู้ใช้"}
+      </h1>
       <p className={styles.subtitle}>
-        Add, search, and manage users with full admin control
+        {language === "en"
+          ? "Add, search, and manage users with full admin control"
+          : "เพิ่ม ค้นหา และจัดการผู้ใช้ได้อย่างสมบูรณ์"}
       </p>
 
       {/* Filter + Search */}
       <div className={styles.filterBar}>
         <div className={styles.filterGroup}>
-          <label>Filter by Role:</label>
+          <label>
+            {language === "en" ? "Filter by Role:" : "กรองตามบทบาท:"}
+          </label>
           <select
             value={filterRole}
             onChange={(e) => setFilterRole(e.target.value)}
             className={styles.selectSmall}
           >
-            <option value="All">All</option>
-            <option value="Physician">Physician</option>
-            <option value="Pharmacist">Pharmacist</option>
-            <option value="Data Entry">Data Entry</option>
-            <option value="Admin">Admin</option>
+            <option value="All">{language === "en" ? "All" : "ทั้งหมด"}</option>
+            <option value="Physician">
+              {language === "en" ? "Physician" : "แพทย์"}
+            </option>
+            <option value="Pharmacist">
+              {language === "en" ? "Pharmacist" : "เภสัชกร"}
+            </option>
+            <option value="Data Entry">
+              {language === "en" ? "Data Entry" : "เจ้าหน้าที่บันทึกข้อมูล"}
+            </option>
+            <option value="Admin">
+              {language === "en" ? "Admin" : "ผู้ดูแลระบบ"}
+            </option>
           </select>
         </div>
+
         <div className={styles.searchGroup}>
           <Search size={16} />
           <input
             type="text"
-            placeholder="Search by first name..."
+            placeholder={
+              language === "en"
+                ? "Search by first name..."
+                : "ค้นหาด้วยชื่อ..."
+            }
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className={styles.searchInput}
           />
         </div>
+
         <button onClick={() => setShowAddModal(true)} className={styles.addBtn}>
-          <Plus size={16} /> Add User
+          <Plus size={16} />{" "}
+          {language === "en" ? "Add User" : "เพิ่มผู้ใช้"}
         </button>
       </div>
 
-      {/* User Table */}
+      {/* Table */}
       <div className={styles.tableBox}>
         <table className={styles.table}>
           <thead>
             <tr>
-              <th>Full Name</th>
+              <th>{language === "en" ? "Full Name" : "ชื่อ-นามสกุล"}</th>
               <th>Email</th>
-              <th>Password</th>
-              <th>Role</th>
-              <th>Hospital</th>
-              <th>Actions</th>
+              <th>{language === "en" ? "Password" : "รหัสผ่าน"}</th>
+              <th>{language === "en" ? "Role" : "บทบาท"}</th>
+              <th>{language === "en" ? "Hospital" : "โรงพยาบาล"}</th>
+              <th>{language === "en" ? "Actions" : "การจัดการ"}</th>
             </tr>
           </thead>
           <tbody>
@@ -193,24 +227,37 @@ export default function AdminUserManagement() {
                   <button
                     className={styles.iconBtn}
                     onClick={() => toggleShowPassword(u.id)}
-                    title="Show Password"
+                    title={
+                      language === "en"
+                        ? "Show Password"
+                        : "แสดงรหัสผ่าน"
+                    }
                   >
-                    {showPassword[u.id] ? <EyeOff size={14} /> : <Eye size={14} />}
+                    {showPassword[u.id] ? (
+                      <EyeOff size={14} />
+                    ) : (
+                      <Eye size={14} />
+                    )}
                   </button>
                 </td>
-                <td>{u.role}</td>
+                  <td>
+                    {u.role === "Physician" && (language === "en" ? "Physician" : "แพทย์")}
+                    {u.role === "Pharmacist" && (language === "en" ? "Pharmacist" : "เภสัชกร")}
+                    {u.role === "Data Entry" && (language === "en" ? "Data Entry" : "เจ้าหน้าที่บันทึกข้อมูล")}
+                    {u.role === "Admin" && (language === "en" ? "Admin" : "ผู้ดูแลระบบ")}
+                  </td>
                 <td>{u.hospital}</td>
                 <td>
                   <button
                     className={styles.iconBtn}
-                    title="Edit User"
+                    title={language === "en" ? "Edit User" : "แก้ไขผู้ใช้"}
                     onClick={() => handleEditUser(u)}
                   >
                     <Edit3 size={16} />
                   </button>
                   <button
                     className={styles.iconBtn}
-                    title="Delete User"
+                    title={language === "en" ? "Delete User" : "ลบผู้ใช้"}
                     onClick={() => handleDeleteUser(u.id)}
                   >
                     <Trash2 size={16} />
@@ -222,17 +269,17 @@ export default function AdminUserManagement() {
         </table>
       </div>
 
-      {/* Add Modal */}
+      {/* Modal: Add */}
       {showAddModal && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
-            <h3>Add New User</h3>
+            <h3>{language === "en" ? "Add New User" : "เพิ่มผู้ใช้ใหม่"}</h3>
             {error && (
               <p className={styles.errorText}>
                 <AlertCircle size={16} /> {error}
               </p>
             )}
-            <label>First Name</label>
+            <label>{language === "en" ? "First Name" : "ชื่อ"}</label>
             <input
               type="text"
               value={newUser.firstName}
@@ -241,7 +288,7 @@ export default function AdminUserManagement() {
               }
               className={styles.input}
             />
-            <label>Last Name</label>
+            <label>{language === "en" ? "Last Name" : "นามสกุล"}</label>
             <input
               type="text"
               value={newUser.lastName}
@@ -259,7 +306,7 @@ export default function AdminUserManagement() {
               }
               className={styles.input}
             />
-            <label>Password</label>
+            <label>{language === "en" ? "Password" : "รหัสผ่าน"}</label>
             <input
               type="text"
               value={newUser.password}
@@ -268,7 +315,7 @@ export default function AdminUserManagement() {
               }
               className={styles.input}
             />
-            <label>Hospital</label>
+            <label>{language === "en" ? "Hospital" : "โรงพยาบาล"}</label>
             <input
               type="text"
               value={newUser.hospital}
@@ -277,7 +324,7 @@ export default function AdminUserManagement() {
               }
               className={styles.input}
             />
-            <label>Role</label>
+            <label>{language === "en" ? "Role" : "บทบาท"}</label>
             <select
               value={newUser.role}
               onChange={(e) =>
@@ -285,39 +332,49 @@ export default function AdminUserManagement() {
               }
               className={styles.select}
             >
-              <option value="">Select Role</option>
-              <option value="Physician">Physician</option>
-              <option value="Pharmacist">Pharmacist</option>
-              <option value="Data Entry">Data Entry</option>
-              <option value="Admin">Admin</option>
+              <option value="">
+                {language === "en" ? "Select Role" : "เลือกบทบาท"}
+              </option>
+              <option value="Physician">
+                {language === "en" ? "Physician" : "แพทย์"}
+              </option>
+              <option value="Pharmacist">
+                {language === "en" ? "Pharmacist" : "เภสัชกร"}
+              </option>
+              <option value="Data Entry">
+                {language === "en" ? "Data Entry" : "เจ้าหน้าที่บันทึกข้อมูล"}
+              </option>
+              <option value="Admin">
+                {language === "en" ? "Admin" : "ผู้ดูแลระบบ"}
+              </option>
             </select>
 
             <div className={styles.modalButtons}>
               <button onClick={handleAddUser} className={styles.saveBtn}>
-                <Save size={16} /> Save
+                <Save size={16} /> {language === "en" ? "Save" : "บันทึก"}
               </button>
               <button
                 onClick={() => setShowAddModal(false)}
                 className={styles.cancelBtn}
               >
-                <X size={16} /> Cancel
+                <X size={16} /> {language === "en" ? "Cancel" : "ยกเลิก"}
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Edit Modal */}
+      {/* Modal: Edit */}
       {showEditModal && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
-            <h3>Edit User</h3>
+            <h3>{language === "en" ? "Edit User" : "แก้ไขผู้ใช้"}</h3>
             {error && (
               <p className={styles.errorText}>
                 <AlertCircle size={16} /> {error}
               </p>
             )}
-            <label>First Name</label>
+            <label>{language === "en" ? "First Name" : "ชื่อ"}</label>
             <input
               type="text"
               value={selectedUser.firstName}
@@ -326,7 +383,7 @@ export default function AdminUserManagement() {
               }
               className={styles.input}
             />
-            <label>Last Name</label>
+            <label>{language === "en" ? "Last Name" : "นามสกุล"}</label>
             <input
               type="text"
               value={selectedUser.lastName}
@@ -344,7 +401,7 @@ export default function AdminUserManagement() {
               }
               className={styles.input}
             />
-            <label>Password</label>
+            <label>{language === "en" ? "Password" : "รหัสผ่าน"}</label>
             <input
               type="text"
               value={selectedUser.password}
@@ -353,7 +410,7 @@ export default function AdminUserManagement() {
               }
               className={styles.input}
             />
-            <label>Hospital</label>
+            <label>{language === "en" ? "Hospital" : "โรงพยาบาล"}</label>
             <input
               type="text"
               value={selectedUser.hospital}
@@ -362,7 +419,7 @@ export default function AdminUserManagement() {
               }
               className={styles.input}
             />
-            <label>Role</label>
+            <label>{language === "en" ? "Role" : "บทบาท"}</label>
             <select
               value={selectedUser.role}
               onChange={(e) =>
@@ -370,21 +427,29 @@ export default function AdminUserManagement() {
               }
               className={styles.select}
             >
-              <option value="Physician">Physician</option>
-              <option value="Pharmacist">Pharmacist</option>
-              <option value="Data Entry">Data Entry</option>
-              <option value="Admin">Admin</option>
+              <option value="Physician">
+                {language === "en" ? "Physician" : "แพทย์"}
+              </option>
+              <option value="Pharmacist">
+                {language === "en" ? "Pharmacist" : "เภสัชกร"}
+              </option>
+              <option value="Data Entry">
+                {language === "en" ? "Data Entry" : "เจ้าหน้าที่บันทึกข้อมูล"}
+              </option>
+              <option value="Admin">
+                {language === "en" ? "Admin" : "ผู้ดูแลระบบ"}
+              </option>
             </select>
 
             <div className={styles.modalButtons}>
               <button onClick={handleSaveEdit} className={styles.saveBtn}>
-                <Save size={16} /> Save
+                <Save size={16} /> {language === "en" ? "Save" : "บันทึก"}
               </button>
               <button
                 onClick={() => setShowEditModal(false)}
                 className={styles.cancelBtn}
               >
-                <X size={16} /> Cancel
+                <X size={16} /> {language === "en" ? "Cancel" : "ยกเลิก"}
               </button>
             </div>
           </div>

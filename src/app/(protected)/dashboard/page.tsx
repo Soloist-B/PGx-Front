@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { usePatients } from "@/context/PatientContext";
 import { Search, Download, Activity } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 import styles from "./page.module.css";
 import {
   PieChart,
@@ -15,6 +16,8 @@ import {
 
 export default function DashboardPage() {
   const { patients } = usePatients();
+  const { language } = useLanguage();
+
   const [filter, setFilter] = useState<
     "all" | "pending_gene" | "pending_approve" | "approved"
   >("all");
@@ -48,22 +51,45 @@ export default function DashboardPage() {
 
   // 🧮 Pie chart data
   const pieData = [
-    { name: "Pending Gene", value: summary.pending_gene, color: "#e55353" },
-    { name: "Pending Approve", value: summary.pending_approve, color: "#f4b400" },
-    { name: "Approved", value: summary.approved, color: "#2b9348" },
+    {
+      name: language === "en" ? "Pending Gene" : "รอกรอกยีน",
+      value: summary.pending_gene,
+      color: "#e55353",
+    },
+    {
+      name: language === "en" ? "Pending Approve" : "รออนุมัติ",
+      value: summary.pending_approve,
+      color: "#f4b400",
+    },
+    {
+      name: language === "en" ? "Approved" : "อนุมัติแล้ว",
+      value: summary.approved,
+      color: "#2b9348",
+    },
   ];
 
   // 📤 Export CSV
   const exportCSV = () => {
-    const headers = [
-      "First Name",
-      "Last Name",
-      "ID",
-      "Gene",
-      "Genotype",
-      "Phenotype",
-      "Status",
-    ];
+    const headers =
+      language === "en"
+        ? [
+            "First Name",
+            "Last Name",
+            "ID",
+            "Gene",
+            "Genotype",
+            "Phenotype",
+            "Status",
+          ]
+        : [
+            "ชื่อ",
+            "นามสกุล",
+            "เลขบัตรประชาชน",
+            "ยีน",
+            "จีโนไทป์",
+            "ฟีโนไทป์",
+            "สถานะ",
+          ];
     const rows = patients.map((p) => [
       p.firstName,
       p.lastName,
@@ -79,33 +105,41 @@ export default function DashboardPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "PGx_Patient_Report.csv";
+    a.download =
+      language === "en"
+        ? "PGx_Patient_Report.csv"
+        : "รายงานผู้ป่วย_PGx.csv";
     a.click();
   };
 
+  // ----------------- Render -----------------
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>PGx Dashboard</h1>
+      <h1 className={styles.title}>
+        {language === "en" ? "PGx Dashboard" : "ภาพรวมระบบ PGx"}
+      </h1>
       <p className={styles.subtitle}>
-        Pharmacogenomics data overview and workflow monitoring.
+        {language === "en"
+          ? "Pharmacogenomics data overview and workflow monitoring."
+          : "ภาพรวมข้อมูลเภสัชพันธุศาสตร์และสถานะการดำเนินงาน"}
       </p>
 
       {/* Summary Cards */}
       <div className={styles.cards}>
         <div className={`${styles.card} ${styles.total}`}>
-          <h3>Total Patients</h3>
+          <h3>{language === "en" ? "Total Patients" : "จำนวนผู้ป่วยทั้งหมด"}</h3>
           <p className={styles.number}>{summary.total}</p>
         </div>
         <div className={`${styles.card} ${styles.pendingGene}`}>
-          <h3>Pending Gene</h3>
+          <h3>{language === "en" ? "Pending Gene" : "รอกรอกยีน"}</h3>
           <p className={styles.number}>{summary.pending_gene}</p>
         </div>
         <div className={`${styles.card} ${styles.pendingApprove}`}>
-          <h3>Pending Approve</h3>
+          <h3>{language === "en" ? "Pending Approve" : "รออนุมัติ"}</h3>
           <p className={styles.number}>{summary.pending_approve}</p>
         </div>
         <div className={`${styles.card} ${styles.approved}`}>
-          <h3>Approved</h3>
+          <h3>{language === "en" ? "Approved" : "อนุมัติแล้ว"}</h3>
           <p className={styles.number}>{summary.approved}</p>
         </div>
       </div>
@@ -113,7 +147,7 @@ export default function DashboardPage() {
       {/* Chart + Filter/Search */}
       <div className={styles.topRow}>
         <div className={styles.chartBox}>
-          <h3>Status Distribution</h3>
+          <h3>{language === "en" ? "Status Distribution" : "สัดส่วนสถานะผู้ป่วย"}</h3>
           <ResponsiveContainer width="100%" height={250}>
             <PieChart>
               <Pie
@@ -146,9 +180,20 @@ export default function DashboardPage() {
                   }`}
                   onClick={() => setFilter(status as any)}
                 >
-                  {status === "all"
-                    ? "All"
-                    : status.replace("_", " ").replace("_", " ")}
+                  {language === "en"
+                    ? status === "all"
+                      ? "All"
+                      : status
+                          .replace("_", " ")
+                          .replace("_", " ")
+                          .replace(/\b\w/g, (c) => c.toUpperCase())
+                    : status === "all"
+                    ? "ทั้งหมด"
+                    : status === "pending_gene"
+                    ? "รอกรอกยีน"
+                    : status === "pending_approve"
+                    ? "รออนุมัติ"
+                    : "อนุมัติแล้ว"}
                 </button>
               )
             )}
@@ -157,7 +202,11 @@ export default function DashboardPage() {
           <div className={styles.searchBar}>
             <input
               type="text"
-              placeholder="Search by Name or ID..."
+              placeholder={
+                language === "en"
+                  ? "Search by Name or ID..."
+                  : "ค้นหาด้วยชื่อหรือเลขบัตร..."
+              }
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className={styles.searchInput}
@@ -174,19 +223,21 @@ export default function DashboardPage() {
         <table className={styles.table}>
           <thead>
             <tr>
-              <th>Name</th>
-              <th>ID</th>
-              <th>Gene</th>
-              <th>Genotype</th>
-              <th>Phenotype</th>
-              <th>Status</th>
+              <th>{language === "en" ? "Name" : "ชื่อ-นามสกุล"}</th>
+              <th>{language === "en" ? "ID" : "เลขบัตรประชาชน"}</th>
+              <th>{language === "en" ? "Gene" : "ยีน"}</th>
+              <th>{language === "en" ? "Genotype" : "จีโนไทป์"}</th>
+              <th>{language === "en" ? "Phenotype" : "ฟีโนไทป์"}</th>
+              <th>{language === "en" ? "Status" : "สถานะ"}</th>
             </tr>
           </thead>
           <tbody>
             {filteredPatients.length === 0 ? (
               <tr>
                 <td colSpan={6} style={{ textAlign: "center", padding: "1rem" }}>
-                  No matching patients found.
+                  {language === "en"
+                    ? "No matching patients found."
+                    : "ไม่พบข้อมูลผู้ป่วยที่ตรงกัน"}
                 </td>
               </tr>
             ) : (
@@ -209,7 +260,13 @@ export default function DashboardPage() {
                           : styles.statusApproved
                       }`}
                     >
-                      {p.status?.replace("_", " ")}
+                      {language === "en"
+                        ? p.status!.replace("_", " ")
+                        : p.status === "pending_gene"
+                        ? "รอกรอกยีน"
+                        : p.status === "pending_approve"
+                        ? "รออนุมัติ"
+                        : "อนุมัติแล้ว"}
                     </span>
                   </td>
                 </tr>
@@ -223,12 +280,24 @@ export default function DashboardPage() {
       <div className={styles.activityBox}>
         <h3>
           <Activity size={18} color="#4CA771" style={{ marginRight: 6 }} />
-          Recent System Activity
+          {language === "en"
+            ? "Recent System Activity"
+            : "กิจกรรมล่าสุดของระบบ"}
         </h3>
         <ul className={styles.activityList}>
-          <li>🧬 Pharmacist Sarah approved HLA-B*15:02 for patient Emily Davis</li>
-          <li>📥 System uploaded CYP2C9 report for patient John Smith</li>
-          <li>👩‍⚕️ Doctor Michael reviewed patient phenotype data</li>
+          {language === "en" ? (
+            <>
+              <li>🧬 Pharmacist Sarah approved HLA-B*15:02 for patient Emily Davis</li>
+              <li>📥 System uploaded CYP2C9 report for patient John Smith</li>
+              <li>👩‍⚕️ Doctor Michael reviewed patient phenotype data</li>
+            </>
+          ) : (
+            <>
+              <li>🧬 เภสัชกร Sarah อนุมัติผล HLA-B*15:02 ของผู้ป่วย Emily Davis</li>
+              <li>📥 ระบบอัปโหลดรายงานยีน CYP2C9 ของผู้ป่วย John Smith</li>
+              <li>👩‍⚕️ แพทย์ Michael ตรวจสอบข้อมูลฟีโนไทป์ของผู้ป่วย</li>
+            </>
+          )}
         </ul>
       </div>
     </div>

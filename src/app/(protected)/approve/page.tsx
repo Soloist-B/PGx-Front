@@ -3,10 +3,13 @@
 import { useState, useMemo } from "react";
 import { usePatients } from "@/context/PatientContext";
 import { Search, CheckCircle, XCircle, ClipboardCheck } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 import styles from "./page.module.css";
 
 export default function ApprovePage() {
   const { patients, updatePatients } = usePatients();
+  const { language } = useLanguage();
+
   const [searchId, setSearchId] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
@@ -29,7 +32,11 @@ export default function ApprovePage() {
       p.idCard === id ? { ...p, status: "approved" as const } : p
     );
     updatePatients(updated);
-    alert("✅ Patient approved successfully!");
+    alert(
+      language === "en"
+        ? "✅ Patient approved successfully!"
+        : "✅ อนุมัติผู้ป่วยสำเร็จแล้ว!"
+    );
     setSelectedId(null);
   };
 
@@ -38,7 +45,11 @@ export default function ApprovePage() {
       p.idCard === id ? { ...p, status: "pending_gene" as const } : p
     );
     updatePatients(updated);
-    alert("❌ Sent back for correction.");
+    alert(
+      language === "en"
+        ? "❌ Sent back for correction."
+        : "❌ ส่งกลับเพื่อแก้ไขข้อมูล."
+    );
     setSelectedId(null);
   };
 
@@ -46,9 +57,13 @@ export default function ApprovePage() {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Approval Management</h1>
+      <h1 className={styles.title}>
+        {language === "en" ? "Approval Management" : "การอนุมัติผลผู้ป่วย"}
+      </h1>
       <p className={styles.subtitle}>
-        Review and approve patients’ pharmacogenomic results.
+        {language === "en"
+          ? "Review and approve patients’ pharmacogenomic results."
+          : "ตรวจสอบและอนุมัติผลเภสัชพันธุศาสตร์ของผู้ป่วย"}
       </p>
 
       <div className={styles.grid}>
@@ -56,18 +71,28 @@ export default function ApprovePage() {
         <div className={styles.left}>
           <div className={styles.chartBox}>
             <h3>
-              <ClipboardCheck size={18} color="#4CA771" style={{ marginRight: 6 }} />
-              Pending Approvals
+              <ClipboardCheck
+                size={18}
+                color="#4CA771"
+                style={{ marginRight: 6 }}
+              />
+              {language === "en" ? "Pending Approvals" : "รอการอนุมัติ"}
             </h3>
             <p className={styles.sectionNote}>
-              Select a patient to review and approve genetic data.
+              {language === "en"
+                ? "Select a patient to review and approve genetic data."
+                : "เลือกผู้ป่วยเพื่อดูรายละเอียดและอนุมัติข้อมูลยีน"}
             </p>
 
             {/* Search bar */}
             <div className={styles.searchBar}>
               <input
                 type="text"
-                placeholder="Search by ID Card (13 digits)"
+                placeholder={
+                  language === "en"
+                    ? "Search by ID Card (13 digits)"
+                    : "ค้นหาด้วยเลขบัตรประชาชน (13 หลัก)"
+                }
                 className={styles.searchInput}
                 value={searchId}
                 onChange={(e) =>
@@ -80,7 +105,11 @@ export default function ApprovePage() {
             </div>
 
             {pendingApprovals.length === 0 ? (
-              <p>No pending approvals found.</p>
+              <p>
+                {language === "en"
+                  ? "No pending approvals found."
+                  : "ไม่พบผู้ป่วยที่รอการอนุมัติ"}
+              </p>
             ) : (
               <div className={styles.scrollBox}>
                 {pendingApprovals.map((p) => (
@@ -95,8 +124,12 @@ export default function ApprovePage() {
                       {p.firstName} {p.lastName}
                     </div>
                     <div className={styles.patientInfo}>
-                      <span>ID: {p.idCard}</span>
-                      <span className={`${styles.statusBadge}`}>Pending_approve</span>
+                      <span>
+                        {language === "en" ? "ID:" : "เลขบัตร:"} {p.idCard}
+                      </span>
+                      <span className={`${styles.statusBadge}`}>
+                        {language === "en" ? "Pending approval" : "รอการอนุมัติ"}
+                      </span>
                     </div>
                   </div>
                 ))}
@@ -109,26 +142,68 @@ export default function ApprovePage() {
         <div className={styles.right}>
           {selectedPatient ? (
             <div className={styles.detailBox}>
-              <h3>Patient Details</h3>
+              <h3>
+                {language === "en"
+                  ? "Patient Details"
+                  : "รายละเอียดผู้ป่วย"}
+              </h3>
               <p className={styles.sectionNote}>
-                Review genetic and personal information before approval.
+                {language === "en"
+                  ? "Review genetic and personal information before approval."
+                  : "ตรวจสอบข้อมูลส่วนบุคคลและผลยีนก่อนการอนุมัติ"}
               </p>
 
               <div className={styles.infoGrid}>
-                <p><strong>Name:</strong> {selectedPatient.firstName} {selectedPatient.lastName}</p>
-                <p><strong>ID:</strong> {selectedPatient.idCard}</p>
-                <p><strong>Sex:</strong> {selectedPatient.sex}</p>
-                <p><strong>DOB:</strong> {selectedPatient.dob}</p>
-                <p><strong>Phone:</strong> {selectedPatient.phone}</p>
-                <p><strong>Ethnicity:</strong> {selectedPatient.ethnicity}</p>
+                <p>
+                  <strong>{language === "en" ? "Name:" : "ชื่อ:"}</strong>{" "}
+                  {selectedPatient.firstName} {selectedPatient.lastName}
+                </p>
+                <p>
+                  <strong>{language === "en" ? "ID:" : "เลขบัตร:"}</strong>{" "}
+                  {selectedPatient.idCard}
+                </p>
+                <p>
+                  <strong>{language === "en" ? "Sex:" : "เพศ:"}</strong>{" "}
+                  {selectedPatient.sex}
+                </p>
+                <p>
+                  <strong>{language === "en" ? "DOB:" : "วันเกิด:"}</strong>{" "}
+                  {selectedPatient.dob}
+                </p>
+                <p>
+                  <strong>{language === "en" ? "Phone:" : "โทรศัพท์:"}</strong>{" "}
+                  {selectedPatient.phone}
+                </p>
+                <p>
+                  <strong>{language === "en" ? "Ethnicity:" : "เชื้อชาติ:"}</strong>{" "}
+                  {selectedPatient.ethnicity}
+                </p>
               </div>
 
               <div className={styles.geneSection}>
-                <h4>Genetic Information</h4>
-                <p><strong>Gene:</strong> {selectedPatient.gene}</p>
-                <p><strong>Genotype:</strong> {selectedPatient.genotype}</p>
-                <p><strong>Phenotype:</strong> {selectedPatient.phenotype}</p>
-                <p><strong>Recommendation:</strong> {selectedPatient.recommendation}</p>
+                <h4>
+                  {language === "en"
+                    ? "Genetic Information"
+                    : "ข้อมูลทางพันธุกรรม"}
+                </h4>
+                <p>
+                  <strong>{language === "en" ? "Gene:" : "ยีน:"}</strong>{" "}
+                  {selectedPatient.gene}
+                </p>
+                <p>
+                  <strong>{language === "en" ? "Genotype:" : "จีโนไทป์:"}</strong>{" "}
+                  {selectedPatient.genotype}
+                </p>
+                <p>
+                  <strong>{language === "en" ? "Phenotype:" : "ฟีโนไทป์:"}</strong>{" "}
+                  {selectedPatient.phenotype}
+                </p>
+                <p>
+                  <strong>
+                    {language === "en" ? "Recommendation:" : "คำแนะนำ:"}
+                  </strong>{" "}
+                  {selectedPatient.recommendation}
+                </p>
               </div>
 
               <div className={styles.actions}>
@@ -136,19 +211,25 @@ export default function ApprovePage() {
                   onClick={() => handleApprove(selectedPatient.idCard)}
                   className={`${styles.button} ${styles.approveBtn}`}
                 >
-                  <CheckCircle size={18} style={{ marginRight: 6 }} /> Approve
+                  <CheckCircle size={18} style={{ marginRight: 6 }} />{" "}
+                  {language === "en" ? "Approve" : "อนุมัติ"}
                 </button>
                 <button
                   onClick={() => handleReject(selectedPatient.idCard)}
                   className={`${styles.button} ${styles.rejectBtn}`}
                 >
-                  <XCircle size={18} style={{ marginRight: 6 }} /> Send Back
+                  <XCircle size={18} style={{ marginRight: 6 }} />{" "}
+                  {language === "en" ? "Send Back" : "ส่งกลับ"}
                 </button>
               </div>
             </div>
           ) : (
             <div className={styles.emptyBox}>
-              <p>Select a patient to view their details.</p>
+              <p>
+                {language === "en"
+                  ? "Select a patient to view their details."
+                  : "เลือกผู้ป่วยเพื่อดูรายละเอียด"}
+              </p>
             </div>
           )}
         </div>

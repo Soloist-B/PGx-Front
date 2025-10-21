@@ -200,6 +200,10 @@
   border-bottom: 2px solid #4ca771;
 }
 
+:global(html.dark) .activityList {
+  color: #ffffff;
+}
+
 :global(html.dark) .table td {
   color: #e6edf3;
   border-bottom: 1px solid #2a323d;

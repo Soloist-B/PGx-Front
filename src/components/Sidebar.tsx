@@ -13,8 +13,9 @@ import {
   Menu,
   X,
   Dna,
-  ShieldUser, // ✅ เพิ่มไอคอนเลือกยีน
+  ShieldUser,
 } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 import styles from "./Sidebar.module.css";
 
 const Sidebar = ({
@@ -26,46 +27,74 @@ const Sidebar = ({
 }) => {
   const pathname = usePathname();
   const router = useRouter();
+  const { language } = useLanguage();
 
-  // ✅ แก้ hydration error
   const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  useEffect(() => setMounted(true), []);
 
   const handleLogout = () => {
     document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
     router.push("/login");
   };
 
-  // ✅ อัปเดตเมนู
+  // 🌍 เมนูรองรับ 2 ภาษา
   const menu = [
-    { name: "Dashboard", path: "/dashboard", icon: <LayoutDashboard size={22} /> },
-    { name: "Admin", path: "/admin", icon: <ShieldUser size={22} /> },
-    { name: "Patients", path: "/patient", icon: <Users size={22} /> },
-    { name: "Gene Selection", path: "/gene", icon: <Dna size={22} /> }, // ✅ หน้าใหม่
-    { name: "Approve", path: "/approve", icon: <ClipboardCheck size={22} /> }, // ✅ เปลี่ยนชื่อ
-    { name: "Reports", path: "/reports", icon: <FileText size={22} /> },
-    { name: "Settings", path: "/settings", icon: <Settings size={22} /> },
+    {
+      name: language === "en" ? "Dashboard" : "ภาพรวมระบบ",
+      path: "/dashboard",
+      icon: <LayoutDashboard size={22} />,
+    },
+    {
+      name: language === "en" ? "Admin" : "ผู้ดูแลระบบ",
+      path: "/admin",
+      icon: <ShieldUser size={22} />,
+    },
+    {
+      name: language === "en" ? "Patients" : "ข้อมูลผู้ป่วย",
+      path: "/patient",
+      icon: <Users size={22} />,
+    },
+    {
+      name: language === "en" ? "Gene Selection" : "เลือกยีน",
+      path: "/gene",
+      icon: <Dna size={22} />,
+    },
+    {
+      name: language === "en" ? "Approve" : "อนุมัติผล",
+      path: "/approve",
+      icon: <ClipboardCheck size={22} />,
+    },
+    {
+      name: language === "en" ? "Reports" : "รายงาน",
+      path: "/reports",
+      icon: <FileText size={22} />,
+    },
+    {
+      name: language === "en" ? "Settings" : "การตั้งค่า",
+      path: "/settings",
+      icon: <Settings size={22} />,
+    },
   ];
 
   return (
     <aside className={`${styles.sidebar} ${!isOpen ? styles.collapsed : ""}`}>
-      {/* Toggle */}
+      {/* Header */}
       <div className={styles.topBar}>
         <button className={styles.toggleBtn} onClick={() => setIsOpen(!isOpen)}>
           <span className={styles.iconWrapper}>
             {mounted ? (isOpen ? <X size={22} /> : <Menu size={22} />) : null}
           </span>
           <span
-            className={`${styles.linkText} ${!isOpen ? styles.textCollapsed : ""}`}
+            className={`${styles.linkText} ${
+              !isOpen ? styles.textCollapsed : ""
+            }`}
           >
             PGx Platform
           </span>
         </button>
       </div>
 
-      {/* Menu */}
+      {/* Navigation Menu */}
       <nav className={styles.menuWrapper}>
         <ul className={styles.menu}>
           {menu.map((item) => (
@@ -91,18 +120,24 @@ const Sidebar = ({
         </ul>
       </nav>
 
-      {/* Logout */}
+      {/* Logout Button */}
       <div className={styles.logoutWrapper}>
         <button className={styles.logoutButton} onClick={handleLogout}>
           <span className={styles.iconWrapper}>
             <LogOut size={22} />
           </span>
           <span
-            className={`${styles.linkText} ${!isOpen ? styles.textCollapsed : ""}`}
+            className={`${styles.linkText} ${
+              !isOpen ? styles.textCollapsed : ""
+            }`}
           >
-            Logout
+            {language === "en" ? "Logout" : "ออกจากระบบ"}
           </span>
-          {!isOpen && <span className={styles.tooltip}>Logout</span>}
+          {!isOpen && (
+            <span className={styles.tooltip}>
+              {language === "en" ? "Logout" : "ออกจากระบบ"}
+            </span>
+          )}
         </button>
       </div>
     </aside>

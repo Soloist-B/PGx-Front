@@ -51,10 +51,11 @@ export function PatientProvider({ children }: { children: ReactNode }) {
     setPatients((prev) => [...prev, p]);
   };
 
-  // ✅ new function for updates (used in gene page)
-  const updatePatients = (list: Patient[]) => {
-    setPatients(list);
+  const updatePatients = (updatedList: Patient[]) => {
+  setPatients(updatedList);
+  localStorage.setItem("patients", JSON.stringify(updatedList));
   };
+
 
   return (
     <PatientContext.Provider value={{ patients, addPatient, updatePatients }}>
